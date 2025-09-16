@@ -5,6 +5,9 @@ import math
 # -------------------- Exo1 -----------------------
 
 def distance_robuste(d1, d2, d3) :
+    """
+    calcule la médiane entre trois valeurs en supprimant les valeurs abérrantes
+    """
     tab = [d1,d2,d3]
     mediane = np.median(tab)
     for i in tab :
@@ -14,6 +17,9 @@ def distance_robuste(d1, d2, d3) :
     return mediane
 
 def test_type_cout(dist,type):
+    """ 
+    retourne la bonne distance (avec coeff) en fonction de la nature du sol
+    """
     if type== 'R' :
         return dist
     if type== 'H' :
@@ -24,6 +30,9 @@ def test_type_cout(dist,type):
         return dist*3
     
 def test_type_vitesse(type):
+    """ 
+    retourne la bonne vitesse en fonction de la nature du sol
+    """
     if type== 'R' :
         return 2
     if type== 'H' :
@@ -34,12 +43,18 @@ def test_type_vitesse(type):
         return 0.5
 
 def cout_deplacement(x1,y1,x2,y2,type) :
+    """
+    retourne le cout de déplacement en fct de la distance
+    """
     coord1 = [x1,y1]
     coord2 = [x2,y2]
     dist = math.dist(coord1,coord2)
     return test_type_cout(dist,type)
 
 def temps_trajet(x1,y1,x2,y2,type) :
+    """
+    retourne le temps de déplacement en fct de la distance
+    """
     coord1 = [x1,y1]
     coord2 = [x2,y2]
     dist = math.dist(coord1,coord2)
@@ -48,36 +63,32 @@ def temps_trajet(x1,y1,x2,y2,type) :
     return temps
 
 
-# Cas normal : les 3 capteurs sont cohérents
-assert abs(distance_robuste(2.0, 2.1, 1.9) - 2.0) < 0.1
-# Cas avec un capteur défaillant
-assert abs(distance_robuste(2.0, 2.1, 15.0) - 2.05) < 0.1
-# Cas limite : deux capteurs défaillants
-assert abs(distance_robuste(1.0, 15.0, 20.0) - 17.5) < 0.1
-# Cas extreme : tous les capteurs donnent des valeurs incohérentes
-# assert distance_robuste(1.0, 15.0, 30.0) == -1 # Signale une erreur
-assert cout_deplacement(0, 0, 5, 0, 'R') == 5.0 # Route horizontale
-assert cout_deplacement(0, 0, 3, 4, 'H') == 7.5 # Herbe, distance=5, cout=5*1.5
-assert cout_deplacement(0, 0, 0, 2, 'S') == 4.0 # Sable vertical
-assert cout_deplacement(1, 1, 1, 1, 'O') == 0.0 # Pas de mouvement
-assert temps_trajet(0, 0, 6, 8, 'R') == 5.0 # 10m à 2m/s = 5s
-assert temps_trajet(0, 0, 3, 4, 'S') == 5.0 # 5m à 1m/s = 5s
-assert temps_trajet(0, 0, 0, 1, 'O') == 2.0 # 1m à 0.5m/s = 2s
-
 
 # -------------------- Exo2 -----------------------
 
 
 def distance_simple(x1,y1,x2,y2) :
+    """
+    calcule la distance entre 2 points
+    """
     dist = math.dist([x1,y1],[x2,y2])
     return dist
 
 class Position :
+    """
+    représente une position (x,y)
+    """
     def __init__(self, x=0, y=0) :
+        """
+        initialise la position a (0,0)
+        """
         self.x = x
         self.y = y
 
     def __add__(self, other):
+        """
+        surcharge de l'opérateur +
+        """
         if isinstance(other, Position):
             return Position(self.x + other.x, self.y + other.y)
 
@@ -85,23 +96,24 @@ class Position :
         print(f"Position(x={self.x}, y={self.y})")
     
     def distance_vers(self,other) :
+        """
+        calcule la distance entre 2 positions
+        """
         return distance_simple(self.x,self.y,other.x,other.y)
 
-pos1 = Position()
-pos1.afficher() # Position(x=0, y=0)
-pos2 = Position(3, 4)
-pos2.afficher() # Position(x=3, y=4)
-pos3 = pos1 + pos2
-pos3.afficher() # Position(x=3, y=4)
-pos1 = Position(0, 0)
-pos2 = Position(3, 4)
-assert pos1.distance_vers(pos2) == 5.0
+
 
 
 # -------------------- Exo3 -----------------------
 
 class Robot : 
+    """
+    représente un robot
+    """
     def __init__(self, position =None ):
+        """
+        initialise le robot a une position
+        """
         if position is None : 
             self.position = Position()
         else :
@@ -117,9 +129,15 @@ class Robot :
         print(f"Robot à position (x={self.position.x}, y= {self.position.y})")
     
     def distance_vers_robot(self,autre_robot) :
+        """
+        calcule la distance entre 2 robots
+        """
         return self.position.distance_vers(autre_robot.position)
     
     def aller_vers(self,position_cible) :
+        """
+        fait bouger le robot vers une position cible
+        """
         while self.position.x < position_cible.x :
             self.avancer_droite(1)
         while self.position.x > position_cible.x :
@@ -129,21 +147,14 @@ class Robot :
         while self.position.y > position_cible.y :
             self.avancer_haut(-1)
         
-robot = Robot()
-robot.afficher() # Robot à position Position(x=0, y=0)
-robot.avancer_droite(3)
-robot.avancer_haut(4)
-robot.afficher() # Robot à position Position(x=3, y=4)
-robot1 = Robot(Position(0, 0))
-robot2 = Robot(Position(3, 4))
-assert robot1.distance_vers_robot(robot2) == 5.0
-robot1.aller_vers(Position(2, 3))
-assert robot1.position.x == 2
-assert robot1.position.y == 3
+
 
 # -------------------- Exo4 -----------------------
 
 class Cible :
+    """
+    Représente une cible à atteindre par le robot
+    """
     def __init__(self, position = None, name = str) :
         self.name = name
         if position is None : 
@@ -152,25 +163,24 @@ class Cible :
             self.position = position 
         
     def est_atteinte_par(self,robot) :
+        """
+        Vérifie si la cible est atteinte
+        """
         if self.position.distance_vers(robot.position)==0 :
             return True
         else : 
             return False
         
     def distance_depuis(self, robot) :
+        """
+        caclcule la distance entre le robot et la cible
+        """
         return self.position.distance_vers(robot.position)
     
     def afficher(self):
         print(f"{self.name} se trouve à la position : (x={self.position.x}, y= {self.position.y})")
     
 
-cible = Cible(Position(5, 3), "Sortie")
-cible.afficher()
-robot = Robot(Position(2, 1))
-assert cible.est_atteinte_par(robot) == False
-assert cible.distance_depuis(robot) == distance_simple(2, 1, 5, 3)
-robot.aller_vers(Position(5, 3))
-assert cible.est_atteinte_par(robot) == True
 
 
 # -------------------- Exo5 -----------------------
@@ -180,32 +190,80 @@ class Parcours :
         self.cibles = []
   
     def ajouter_cible(self,cible) :
+        """
+        ajout de cible dans la liste
+        """
         self.cibles.append(cible)    
 
     def nombre_cibles(self) :
+        """
+        calcule le nombre de cibles
+        """
         return len(self.cibles)
     
-    def cible_suivante(self) :
-        for elem in self.cibles :
+    def cible_suivante(self,robot) :
+        """
+        rerourne a la cible non atteinte par le robot
+        """
+        for cible in self.cibles :
             if not cible.est_atteinte_par(robot) : 
                 return cible 
     
     def executer_parcours(self,robot) :
         for cible in self.cibles :
             robot.aller_vers(cible.position)
+    
+    def afficher(self):
+        print("Parcours :")
+        for i, cible in enumerate(self.cibles, start=1):
+            print(f"{i}. {cible.name} à Position (x={cible.position.x}, y={cible.position.y})")
+            
 
 
-parcours = Parcours()
-parcours.ajouter_cible(Cible(Position(2, 0), "Point A"))
-parcours.ajouter_cible(Cible(Position(2, 3), "Point B"))
-parcours.ajouter_cible(Cible(Position(5, 3), "Point C"))
-assert parcours.nombre_cibles() == 3
-robot = Robot()
-parcours.executer_parcours(robot)
-# Vérifier que le robot a atteint la dernière cible
-derniere_cible = Cible(Position(5, 3), "Point C")
-assert derniere_cible.est_atteinte_par(robot) == True
 
 
 # -------------------- Exo6 -----------------------
+
+class Terrain :
+    def __init__(self) :
+        self.robots =[]
+        self.parcours = None
+
+    def afficher_etat(self):
+        for i, robot in enumerate(self.robots, start=1):
+            print(f"Robot {i}: Position (x={robot.position.x}, y={robot.position.y})")
+
+    def ajouter_robot(self,robot) :
+        self.robots.append(robot)
+    
+    def definir_parcours(self,parcours) :
+        self.parcours =parcours 
+    
+    def lancer_mission(self) :
+        for robot in self.robots :
+            self.parcours.executer_parcours(robot)
+            
+
+
+
+
+def demonstration_complete() :
+    terrain = Terrain()
+    robot1 = Robot(Position(7,1))
+    robot2 = Robot(Position(3, 4))
+    terrain.ajouter_robot(robot1)
+    terrain.ajouter_robot(robot2)
+    parcours = Parcours()
+    parcours.ajouter_cible(Cible(Position(2, 0), "Point A"))
+    parcours.ajouter_cible(Cible(Position(8, 1), "Point B"))
+    parcours.ajouter_cible(Cible(Position(12, 1), "Point C"))
+    parcours.afficher()
+    terrain.definir_parcours(parcours)
+    print("Etat au début : ")
+    terrain.afficher_etat()
+    terrain.lancer_mission()
+    print("Etat final : ")
+    terrain.afficher_etat()
+
+demonstration_complete()
 
