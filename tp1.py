@@ -176,9 +176,36 @@ assert cible.est_atteinte_par(robot) == True
 # -------------------- Exo5 -----------------------
 
 class Parcours : 
-    def __init__(self, cible) :
-        self.cible =cible 
-        cible =[]
-
+    def __init__(self) :
+        self.cibles = []
+  
     def ajouter_cible(self,cible) :
-            
+        self.cibles.append(cible)    
+
+    def nombre_cibles(self) :
+        return len(self.cibles)
+    
+    def cible_suivante(self) :
+        for elem in self.cibles :
+            if not cible.est_atteinte_par(robot) : 
+                return cible 
+    
+    def executer_parcours(self,robot) :
+        for cible in self.cibles :
+            robot.aller_vers(cible.position)
+
+
+parcours = Parcours()
+parcours.ajouter_cible(Cible(Position(2, 0), "Point A"))
+parcours.ajouter_cible(Cible(Position(2, 3), "Point B"))
+parcours.ajouter_cible(Cible(Position(5, 3), "Point C"))
+assert parcours.nombre_cibles() == 3
+robot = Robot()
+parcours.executer_parcours(robot)
+# Vérifier que le robot a atteint la dernière cible
+derniere_cible = Cible(Position(5, 3), "Point C")
+assert derniere_cible.est_atteinte_par(robot) == True
+
+
+# -------------------- Exo6 -----------------------
+
